@@ -7,7 +7,8 @@ client = RESTClient(api_key=config.API_KEY)
 
 def get_real_time_data(ticker):
     # Get the current date
-    today = datetime.now().strftime('%Y-%m-%d')
+    # today = datetime.now().strftime('%Y-%m-%d')
+    today = "2024-12-01"
     
     # Get aggregate data for the ticker (real-time)
     aggs = client.get_aggs(
