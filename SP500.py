@@ -45,13 +45,13 @@ def get_x_percent_gainers_sp500(start_date, end_date):
     return gainers
 
 # Example usage
-gainers = get_x_percent_gainers_sp500("2024-05-22", "2024-05-27")
+# gainers = get_x_percent_gainers_sp500("2024-05-22", "2024-05-27")
 
-if gainers:
-    for ticker, date, change in gainers:
-        print(f"{ticker} gained {change:.2f}% on {date}")
-else:
-    print("No gainers found within the specified range.")
+# if gainers:
+#     for ticker, date, change in gainers:
+#         print(f"{ticker} gained {change:.2f}% on {date}")
+# else:
+#     print("No gainers found within the specified range.")
 
 def consecutive_gainers(start_date, end_date):
     gainers = []
@@ -73,12 +73,20 @@ def consecutive_gainers(start_date, end_date):
                 if prev_agg.close <= prev_agg.open or curr_agg.close <= curr_agg.open:
                     all_gain_days = False
                     break
+                print(f"第{i}天收盘价： ${curr_agg.close}")
+
             if all_gain_days:
                 gainers.append(ticker)
-                print(f"{ticker}")
+                print(f"符合条件，连续上涨：{ticker}")
 
         except Exception as e:
             print(f"Error fetching {ticker}: {e}")
         time.sleep(12)
 
     return gainers
+
+gainers = consecutive_gainers("2024-06-22", "2024-06-23")
+if gainers:
+    print("Consecutive gainers found:", gainers)
+else:
+    print("No consecutive gainers found in the specified range.")
