@@ -55,7 +55,7 @@ def get_x_percent_gainers_sp500(start_date, end_date):
 
 def consecutive_gainers(start_date, end_date):
     gainers = []
-    for ticker in SP500_TICKERS_S:
+    for ticker in SP500_TICKERS:
         print(f"Fetching data for {ticker}...")  # Debugging: Track progress
         try:
             aggs = client.get_aggs(
@@ -66,18 +66,22 @@ def consecutive_gainers(start_date, end_date):
                 to=end_date
             )
             all_gain_days = True
+
+            print(f"day 1: {aggs[0].close}")
             for i in range(1, len(aggs)):
                 prev_agg = aggs[i - 1]
                 curr_agg = aggs[i]
                 
-                if prev_agg.close <= prev_agg.open or curr_agg.close <= curr_agg.open:
+                
+                print(f"day {i+1}: {curr_agg.close}")
+                if prev_agg.close >= curr_agg.close:
                     all_gain_days = False
                     break
-                print(f"第{i}天收盘价： ${curr_agg.close}")
 
             if all_gain_days:
                 gainers.append(ticker)
-                print(f"符合条件，连续上涨：{ticker}")
+                print(f"matched: {ticker}")
+            print("-------------------")
 
         except Exception as e:
             print(f"Error fetching {ticker}: {e}")
@@ -85,7 +89,7 @@ def consecutive_gainers(start_date, end_date):
 
     return gainers
 
-gainers = consecutive_gainers("2024-06-22", "2024-06-23")
+gainers = consecutive_gainers("2025-02-10", "2025-02-14")
 if gainers:
     print("Consecutive gainers found:", gainers)
 else:
