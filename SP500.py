@@ -1,3 +1,4 @@
+import datetime
 import random
 from polygon import RESTClient
 import config
@@ -78,13 +79,15 @@ def consecutive_gainers(start_date, end_date):
             )
             all_gain_days = True
 
-            print(f"day 1: {aggs[0].close}")
             for i in range(1, len(aggs)):
                 prev_agg = aggs[i - 1]
                 curr_agg = aggs[i]
-                
-                
-                print(f"day {i+1}: {curr_agg.close}")
+
+                prev_date = datetime.datetime.fromtimestamp(prev_agg.timestamp / 1000).strftime('%Y-%m-%d')
+                curr_date = datetime.datetime.fromtimestamp(curr_agg.timestamp / 1000).strftime('%Y-%m-%d')
+
+                print(f"{ticker} - {prev_date}: {prev_agg.close}")
+                print(f"{ticker} - {curr_date}: {curr_agg.close}")
                 if prev_agg.close >= curr_agg.close:
                     all_gain_days = False
                     break
