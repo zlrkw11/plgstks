@@ -1,6 +1,7 @@
 import datetime
 import random
 from polygon import RESTClient
+import requests
 import config
 import time
 
@@ -69,6 +70,7 @@ def consecutive_gainers(start_date, end_date):
     gainers = []
     for ticker in SP500_TICKERS:
         print(f"Fetching data for {ticker}...")  # Debugging: Track progress
+        print("******************")
         try:
             aggs = client.get_aggs(
                 ticker=ticker,
@@ -86,8 +88,8 @@ def consecutive_gainers(start_date, end_date):
                 prev_date = datetime.datetime.fromtimestamp(prev_agg.timestamp / 1000).strftime('%Y-%m-%d')
                 curr_date = datetime.datetime.fromtimestamp(curr_agg.timestamp / 1000).strftime('%Y-%m-%d')
 
-                print(f"{ticker} - {prev_date}: {prev_agg.close}")
-                print(f"{ticker} - {curr_date}: {curr_agg.close}")
+                print(f"{prev_date}: {prev_agg.close}")
+                print(f"{curr_date}: {curr_agg.close}")
                 if prev_agg.close >= curr_agg.close:
                     all_gain_days = False
                     break
@@ -95,8 +97,18 @@ def consecutive_gainers(start_date, end_date):
             if all_gain_days:
                 gainers.append(ticker)
                 print(f"matched: {ticker}")
-            print("-------------------")
-
+            print("------------------")
+            
+        except requests.exceptions.HTTPError as e:
+                if e.response.status_code == 429:
+                    wait_time = (2 ** retries) * 5  # Exponential backoff
+                    print(f"Rate limit hit. Retrying in {wait_time} seconds...")
+                    time.sleep(wait_time)
+                    retries += 1
+                else:
+                    print(f"HTTP error fetching {ticker}: {e}")
+                    break
+                
         except Exception as e:
             print(f"Error fetching {ticker}: {e}")
         time.sleep(12)
