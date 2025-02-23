@@ -45,6 +45,7 @@ def get_x_percent_gainers_sp500(start_date, end_date):
                     percent_change = ((agg.close - agg.open) / agg.open) * 100
                     if percent_change > percentage:
                         gainers.append((ticker, agg.timestamp, percent_change))
+                        print(f"{ticker}: {percent_change}")
 
         except Exception as e:
             print(f"Error fetching {ticker}: {e}") 
@@ -53,18 +54,19 @@ def get_x_percent_gainers_sp500(start_date, end_date):
 
     return gainers
 
-# Example usage
-# gainers = get_x_percent_gainers_sp500("2024-05-22", "2024-05-27")
+'''
+gainers = get_x_percent_gainers_sp500("2025-01-01", "2025-02-01")
 
-# if gainers:
-#     for ticker, date, change in gainers:
-#         print(f"{ticker} gained {change:.2f}% on {date}")
-# else:
-#     print("No gainers found within the specified range.")
+if gainers:
+    for ticker, date, change in gainers:
+        print(f"{ticker} gained {change:.2f}% on {date}")
+else:
+    print("No gainers found within the specified range.")
+'''
 
 def consecutive_gainers(start_date, end_date):
     gainers = []
-    for ticker in sample_tickers:
+    for ticker in SP500_TICKERS:
         print(f"Fetching data for {ticker}...")  # Debugging: Track progress
         try:
             aggs = client.get_aggs(
@@ -99,10 +101,7 @@ def consecutive_gainers(start_date, end_date):
     return gainers
 
 
-
-
-
-gainers = consecutive_gainers("2025-02-10", "2025-02-14")
+gainers = consecutive_gainers("2025-01-01", "2025-01-04")
 if gainers:
     print("Consecutive gainers found:", gainers)
 else:
