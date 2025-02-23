@@ -1,3 +1,4 @@
+import random
 from polygon import RESTClient
 import config
 import time
@@ -11,6 +12,14 @@ SP500_TICKERS = [
 ]
 SP500_TICKERS_S = [
     "AAPL", "MSFT", "GOOGL", "AMZN", "TSLA" 
+]
+
+sample_tickers = [
+    "AAPL", "MSFT", "GOOGL", "AMZN", "TSLA", "META", "NVDA", "BRK.B", "UNH", "JNJ",
+    "V", "XOM", "PG", "JPM", "HD", "MA", "CVX", "ABBV", "PFE", "PEP", "NFLX",
+    "DIS", "NVDA", "PYPL", "INTC", "AMD", "CSCO", "GS", "IBM", "WMT", "T",
+    "BA", "CAT", "DE", "HD", "MCD", "KO", "SBUX", "GM", "F", "LUV", "UAL", "SPG",
+    "BMY", "OXY", "ZTS", "MMM", "VZ", "PFE", "MO", "TGT", "ADBE", "SQ", "AMGN"
 ]
 
 # Find +5% gainers
@@ -55,7 +64,7 @@ def get_x_percent_gainers_sp500(start_date, end_date):
 
 def consecutive_gainers(start_date, end_date):
     gainers = []
-    for ticker in SP500_TICKERS:
+    for ticker in sample_tickers:
         print(f"Fetching data for {ticker}...")  # Debugging: Track progress
         try:
             aggs = client.get_aggs(
@@ -88,6 +97,10 @@ def consecutive_gainers(start_date, end_date):
         time.sleep(12)
 
     return gainers
+
+
+
+
 
 gainers = consecutive_gainers("2025-02-10", "2025-02-14")
 if gainers:
