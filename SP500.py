@@ -115,9 +115,83 @@ def consecutive_gainers(start_date, end_date):
 
     return gainers
 
+def consecutive_weekly_gainers(start_date, end_date, weeks):
+    gainers = []
+    for ticker in SP500_TICKERS:
+        print(f"Fetching data for {ticker}...")  
+        try:
+            aggs = client.get_aggs(
+                ticker=ticker,
+                multiplier=1,
+                timespan="day",
+                from_=start_date,
+                to=end_date
+            )
+            
+            # Group daily data into weekly data (each week = 7 days)
+            weekly_closes = []
+            current_week = []
+            start_of_week = None
 
-gainers = consecutive_gainers("2025-01-01", "2025-01-04")
-if gainers:
-    print("Consecutive gainers found:", gainers)
-else:
-    print("No consecutive gainers found in the specified range.")
+            for agg in aggs:
+                date = datetime.datetime.fromtimestamp(agg.timestamp / 1000)
+                if start_of_week is None:
+                    start_of_week = date
+
+                # If 7 days passed or it's a new week, calculate weekly close
+                if (date - start_of_week).days >= 7:
+                    weekly_closes.append((start_of_week.strftime('%Y-%m-%d'), current_week[-1].close))
+                    start_of_week = date
+                    current_week = []
+
+                current_week.append(agg)
+
+            # Add the last week's data
+            if current_week:
+                weekly_closes.append((start_of_week.strftime('%Y-%m-%d'), current_week[-1].close))
+
+            # Check for consecutive weekly gains
+            consecutive_weeks = 0
+            for i in range(1, len(weekly_closes)):
+                prev_week_close = weekly_closes[i - 1][1]
+                curr_week_close = weekly_closes[i][1]
+
+                print(f"Week of {weekly_closes[i - 1][0]}: {prev_week_close}")
+                print(f"Week of {weekly_closes[i][0]}: {curr_week_close}")
+
+                if curr_week_close > prev_week_close:
+                    consecutive_weeks += 1
+                else:
+                    consecutive_weeks = 0  # Reset if a down week is found
+
+                if consecutive_weeks >= weeks:
+                    gainers.append(ticker)
+                    print(f"Matched: {ticker} with {weeks} consecutive gaining weeks.")
+                    break
+
+            print("------------------")
+
+        except requests.exceptions.HTTPError as e:
+            if e.response.status_code == 429:
+                print("Rate limit hit. Waiting 12 seconds...")
+                time.sleep(12)
+            else:
+                print(f"HTTP error fetching {ticker}: {e}")
+                
+        except Exception as e:
+            print(f"Error fetching {ticker}: {e}")
+
+        time.sleep(12)  # To respect rate limits
+
+    print(gainers)
+    return gainers
+
+# Example usage — check for 3 consecutive weekly gainers
+gainers = consecutive_weekly_gainers("2025-01-01", "2025-01-30", weeks=3)
+print("Consecutive weekly gainers:", gainers)
+
+# gainers = consecutive_gainers("2025-01-01", "2025-01-04")
+# if gainers:
+#     print("Consecutive gainers found:", gainers)
+# else:
+#     print("No consecutive gainers found in the specified range.")
