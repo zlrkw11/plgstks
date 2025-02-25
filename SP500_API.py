@@ -4,7 +4,10 @@ from polygon import RESTClient
 import requests
 import config
 import time
+import openai
+print(openai.__version__)
 
+openai.api_key = ""
 client = RESTClient(api_key=config.API_KEY)
 
 # 20 S&P 500 tickers
@@ -23,6 +26,14 @@ sample_tickers = [
     "BA", "CAT", "DE", "HD", "MCD", "KO", "SBUX", "GM", "F", "LUV", "UAL", "SPG",
     "BMY", "OXY", "ZTS", "MMM", "VZ", "PFE", "MO", "TGT", "ADBE", "SQ", "AMGN"
 ]
+
+def ask_gpt(prompt):
+    response = openai.ChatCompletion.create(
+        model="gpt-4",  # or "gpt-3.5-turbo" depending on your needs
+        messages=[{"role": "user", "content": prompt}],
+        max_tokens=200
+    )
+    return response.choices[0].message["content"].strip()
 
 # Find +5% gainers
 def get_x_percent_gainers_sp500(start_date, end_date):
@@ -195,3 +206,8 @@ print("Consecutive weekly gainers:", gainers)
 #     print("Consecutive gainers found:", gainers)
 # else:
 #     print("No consecutive gainers found in the specified range.")
+
+prompt = f"Based on the following stock data, which stock would you recommend buying for quick profit and why? {gainers}"
+result = ask_gpt(prompt)
+
+print("AI's Recommendation:", result)
