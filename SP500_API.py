@@ -187,11 +187,11 @@ def consecutive_weekly_gainers(start_date, end_date, weeks):
     return gainers
 
 # Example usage — check for 3 consecutive weekly gainers
-# gainers = consecutive_weekly_gainers("2025-01-01", "2025-01-30", weeks=3)
-# print("Consecutive weekly gainers:", gainers)
+gainers = consecutive_weekly_gainers("2025-01-01", "2025-01-30", weeks=3)
+print("Consecutive weekly gainers:", gainers)
 
-gainers = consecutive_gainers("2025-01-01", "2025-01-04")
-if gainers:
-     print("Consecutive gainers found:", gainers)
-else:
-    print("No consecutive gainers found in the specified range.")
+# gainers = consecutive_gainers("2025-01-01", "2025-01-04")
+# if gainers:
+#     print("Consecutive gainers found:", gainers)
+# else:
+#     print("No consecutive gainers found in the specified range.")
